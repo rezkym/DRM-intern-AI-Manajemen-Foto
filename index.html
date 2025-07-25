@@ -90,17 +90,108 @@
                                     </div>
                                 </form>
 
-                                <!-- Progress Section -->
+                                <!-- Progress Section - Minimal Fallback -->
                                 <div id="progressSection" class="mt-3" style="display: none;">
-                                    <div class="card bg-light border-0">
-                                        <div class="card-body py-3">
-                                            <h6 class="mb-2">Status Pemrosesan</h6>
-                                            <div class="progress mb-2">
-                                                <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressBar" 
-                                                     role="progressbar" style="width: 0%"></div>
+                                    <div class="progress-section-fallback">
+                                        <h6 class="mb-2">Status Upload</h6>
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressBar" 
+                                                 role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <div id="statusText" class="small">Memulai upload...</div>
+                                    </div>
+                                </div>
+
+                                <!-- AI Processing Section - Enhanced Interactive Animation -->
+                                <div id="aiProcessingSection" class="mt-3" style="display: none;">
+                                    <div class="card border-primary ai-processing-card">
+                                        <div class="card-header bg-gradient-primary text-white py-3">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <h6 class="mb-0">
+                                                    <i class="fas fa-brain ai-brain-icon me-2"></i>
+                                                    <span id="aiProcessingTitle">AI Neural Network sedang menganalisa...</span>
+                                                </h6>
+                                                <div class="ai-confidence-score">
+                                                    <span id="confidenceScore">0%</span>
+                                                </div>
                                             </div>
-                                            <div id="statusText" class="small">Memulai upload...</div>
-                                            <div id="currentFiles" class="mt-2 small"></div>
+                                            
+                                            <!-- Neural Network Animation -->
+                                            <div class="neural-network-viz mt-2">
+                                                <div class="neural-nodes">
+                                                    <div class="neural-node" style="--delay: 0s"></div>
+                                                    <div class="neural-node" style="--delay: 0.2s"></div>
+                                                    <div class="neural-node" style="--delay: 0.4s"></div>
+                                                    <div class="neural-node" style="--delay: 0.6s"></div>
+                                                    <div class="neural-node" style="--delay: 0.8s"></div>
+                                                </div>
+                                                <div class="neural-connections">
+                                                    <div class="neural-line" style="--delay: 0.1s"></div>
+                                                    <div class="neural-line" style="--delay: 0.3s"></div>
+                                                    <div class="neural-line" style="--delay: 0.5s"></div>
+                                                    <div class="neural-line" style="--delay: 0.7s"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="card-body">
+                                            <!-- Photo Analysis Grid -->
+                                            <div id="processingPhotos" class="photo-analysis-grid mb-4">
+                                                <!-- Foto dengan scanning animation akan ditambahkan di sini -->
+                                            </div>
+                                            
+                                            <!-- Real-time Analysis Display -->
+                                            <div class="analysis-display">
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <div class="analysis-panel">
+                                                            <h6 class="analysis-title">
+                                                                <i class="fas fa-eye text-primary"></i> Deteksi Visual
+                                                            </h6>
+                                                            <div id="visualDetection" class="analysis-content">
+                                                                <div class="detection-item scanning">Memindai objek...</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="analysis-panel">
+                                                            <h6 class="analysis-title">
+                                                                <i class="fas fa-tags text-success"></i> Tag Otomatis
+                                                            </h6>
+                                                            <div id="autoTags" class="analysis-content">
+                                                                <div class="tag-item generating">Menghasilkan tag...</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Progress Bars for Different Analysis -->
+                                                <div class="analysis-progress mt-3">
+                                                    <div class="progress-item">
+                                                        <span class="progress-label">Deteksi Objek</span>
+                                                        <div class="progress progress-sm">
+                                                            <div class="progress-bar bg-primary" id="objectProgress" style="width: 0%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="progress-item">
+                                                        <span class="progress-label">Analisis Warna</span>
+                                                        <div class="progress progress-sm">
+                                                            <div class="progress-bar bg-info" id="colorProgress" style="width: 0%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="progress-item">
+                                                        <span class="progress-label">Kategorisasi</span>
+                                                        <div class="progress progress-sm">
+                                                            <div class="progress-bar bg-success" id="categoryProgress" style="width: 0%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Floating Analysis Tags -->
+                                            <div id="floatingTags" class="floating-tags-container">
+                                                <!-- Tags akan muncul secara dinamis -->
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
