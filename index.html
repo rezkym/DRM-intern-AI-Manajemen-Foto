@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Photo Manager - Manajemen Foto Pintar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-camera-retro"></i> AI Photo Manager
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/browse.html">
+                    <i class="fas fa-images me-2"></i>Browse Foto
+                </a>
+                <a class="nav-link" href="#" onclick="showStats()">
+                    <i class="fas fa-chart-pie me-2"></i>Statistik
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 120px;">
+        <div class="row">
+            <div class="col-md-10 col-lg-8 mx-auto">
+                <div class="text-center mb-5">
+                    <h1 class="display-5 fw-bold mb-3">Manajemen Foto Pintar dengan AI</h1>
+                    <p class="lead text-muted">Organisir dan temukan foto Anda dengan mudah menggunakan teknologi AI terdepan</p>
+                </div>
+                
+                <div class="card mb-5">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="fas fa-cloud-upload-alt me-3"></i>Upload Foto untuk Analisis AI</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-lightbulb fa-2x text-primary me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold mb-2">Cara Kerja Sistem AI:</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="badge bg-primary me-2">1</span>
+                                                <small>Upload foto (maks <span id="maxFileSize">10</span>MB per file)</small>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="badge bg-primary me-2">2</span>
+                                                <small>AI menganalisis konten & keyword</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="badge bg-primary me-2">3</span>
+                                                <small>Organisir otomatis ke folder</small>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="badge bg-primary me-2">4</span>
+                                                <small>Pencarian berdasarkan konten</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="photos" class="form-label">Pilih Foto</label>
+                                <input type="file" class="form-control" id="photos" name="files" multiple accept=".jpg,.jpeg,.png,.webp,.bmp,.gif" required>
+                                <div class="form-text">
+                                    Format yang didukung: <span id="supportedFormats">JPG, JPEG, PNG, WEBP, BMP, GIF</span>
+                                    (Maks <span id="maxFileSizeText">10</span>MB per file)
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg" id="uploadBtn">
+                                    <i class="fas fa-magic me-2"></i>Upload dan Proses dengan AI
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Progress Section -->
+                        <div id="progressSection" class="mt-4" style="display: none;">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5>Status Pemrosesan</h5>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressBar" 
+                                             role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                    <div id="statusText">Memulai upload...</div>
+                                    <div id="currentFiles" class="mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Section -->
+                        <div id="resultsSection" class="mt-4" style="display: none;">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0"><i class="fas fa-check-circle"></i> Hasil Pemrosesan</h5>
+                                </div>
+                                <div class="card-body" id="resultsContent">
+                                    <!-- Hasil akan diisi oleh JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Section -->
+                <div class="card">
+                    <div class="card-header bg-success">
+                        <h4 class="mb-0"><i class="fas fa-search-plus me-3"></i>Pencarian Foto Cerdas</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-9">
+                                <div class="position-relative">
+                                    <input type="text" class="form-control pe-5" id="searchQuery" 
+                                           placeholder="Contoh: 'pria bermain musik', 'pantai sunset', 'foto formal'">
+                                    <i class="fas fa-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-success w-100" onclick="searchPhotos()">
+                                    <i class="fas fa-sparkles me-2"></i>Cari AI
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-robot me-1"></i>
+                                <strong>Tips:</strong> Gunakan deskripsi natural seperti "pria berjas", "suasana pantai", atau "aktivitas musik"
+                            </small>
+                        </div>
+                        
+                        <div id="searchResults" class="mt-3">
+                            <!-- Hasil pencarian akan diisi oleh JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Modal -->
+    <div class="modal fade" id="photoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photoModalTitle">Detail Foto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <img id="photoModalImage" src="" class="img-fluid" alt="">
+                        </div>
+                        <div class="col-md-4">
+                            <div id="photoModalMetadata">
+                                <!-- Metadata akan diisi oleh JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div class="modal fade" id="statsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-chart-bar"></i> Statistik Foto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="statsContent">
+                    <!-- Statistik akan diisi oleh JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html> 
