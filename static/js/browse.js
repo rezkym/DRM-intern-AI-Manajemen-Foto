@@ -57,7 +57,7 @@ async function loadFolderPhotos(folderName) {
 }
 
 /**
- * Render daftar folder
+ * Render daftar folder dengan design compact
  */
 function renderFoldersList(folders) {
     const container = document.getElementById('foldersContainer');
@@ -67,18 +67,16 @@ function renderFoldersList(folders) {
     folders.forEach(folder => {
         const displayName = folder.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         html += `
-            <div class="col-lg-4 col-md-6 mb-4">
-                <a href="/browse.html?folder=${encodeURIComponent(folder.name)}" class="text-decoration-none">
+            <div class="col-lg-4 col-md-6 mb-3">
+                <a href="/browse.html?folder=${encodeURIComponent(folder.name)}" class="folder-card text-decoration-none">
                     <div class="card h-100 hover-card">
                         <div class="card-body text-center">
-                            <div class="mb-4">
-                                <div class="p-4 rounded-circle d-inline-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light)); width: 80px; height: 80px;">
-                                    <i class="fas fa-folder-open fa-2x text-white"></i>
-                                </div>
+                            <div class="folder-icon mx-auto mb-3">
+                                <i class="fas fa-folder-open fa-lg text-white"></i>
                             </div>
-                            <h5 class="card-title fw-bold mb-2">${displayName}</h5>
-                            <p class="card-text text-muted mb-3">
-                                Koleksi foto yang terorganisir berdasarkan konten
+                            <h6 class="card-title fw-bold mb-2">${displayName}</h6>
+                            <p class="card-text text-muted mb-3 small">
+                                Koleksi foto terorganisir
                             </p>
                             <div class="d-flex justify-content-center align-items-center">
                                 <span class="badge bg-info me-2">
@@ -98,48 +96,47 @@ function renderFoldersList(folders) {
 }
 
 /**
- * Render foto dalam folder
+ * Render foto dalam folder dengan design compact
  */
 function renderFolderPhotos(folderName, photos) {
     const container = document.getElementById('photosContainer');
     const folderView = document.getElementById('folderView');
     const folderNameElement = document.getElementById('folderName');
     
-    folderNameElement.textContent = folderName;
+    folderNameElement.textContent = folderName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     
     let html = '';
     photos.forEach(photo => {
         const description = photo.metadata.description || '';
-        const truncatedDesc = description.length > 100 ? description.substring(0, 100) + '...' : description;
+        const truncatedDesc = description.length > 80 ? description.substring(0, 80) + '...' : description;
         
         let keywordsHtml = '';
         if (photo.metadata.keywords && photo.metadata.keywords.length > 0) {
-            const visibleKeywords = photo.metadata.keywords.slice(0, 3);
+            const visibleKeywords = photo.metadata.keywords.slice(0, 2);
             keywordsHtml = visibleKeywords.map(keyword => 
                 `<span class="badge bg-secondary me-1 mb-1">${keyword}</span>`
             ).join('');
             
-            if (photo.metadata.keywords.length > 3) {
-                keywordsHtml += `<span class="badge bg-info">+${photo.metadata.keywords.length - 3}</span>`;
+            if (photo.metadata.keywords.length > 2) {
+                keywordsHtml += `<span class="badge bg-info">+${photo.metadata.keywords.length - 2}</span>`;
             }
         }
         
         html += `
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card hover-card h-100">
-                    <div class="position-relative overflow-hidden" style="border-radius: 20px 20px 0 0;">
+            <div class="col-lg-4 col-md-6 mb-3">
+                <div class="card photo-card hover-card h-100">
+                    <div class="position-relative overflow-hidden" style="border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;">
                         <img src="/${photo.path}" class="card-img-top" alt="${photo.filename}" 
-                             style="height: 220px; object-fit: cover; transition: transform 0.3s ease; cursor: pointer;" 
-                             onclick="showPhotoModal('${photo.path}', '${photo.filename}', ${JSON.stringify(photo.metadata).replace(/"/g, '&quot;')})"
-                             onmouseover="this.style.transform='scale(1.05)'"
-                             onmouseout="this.style.transform='scale(1)'">
+                             onclick="showPhotoModal('${photo.path}', '${photo.filename}', ${JSON.stringify(photo.metadata).replace(/"/g, '&quot;')})">
                         <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-primary"><i class="fas fa-eye"></i></span>
+                            <span class="badge bg-primary">
+                                <i class="fas fa-eye"></i>
+                            </span>
                         </div>
                     </div>
                     <div class="card-body d-flex flex-column">
-                        <h6 class="card-title fw-bold mb-2">${photo.filename}</h6>
-                        ${description ? `<p class="card-text small text-muted flex-grow-1">${truncatedDesc}</p>` : ''}
+                        <h6 class="card-title fw-bold mb-2 text-truncate">${photo.filename}</h6>
+                        ${description ? `<p class="card-text small text-muted flex-grow-1 text-truncate-2">${truncatedDesc}</p>` : ''}
                         ${keywordsHtml ? `<div class="mt-auto">${keywordsHtml}</div>` : ''}
                     </div>
                 </div>
@@ -188,7 +185,7 @@ function showNoFoldersMessage() {
  * Show empty folder message
  */
 function showEmptyFolderMessage(folderName) {
-    document.getElementById('folderName').textContent = folderName;
+    document.getElementById('folderName').textContent = folderName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     document.getElementById('emptyFolderMessage').style.display = 'block';
     document.getElementById('folderView').style.display = 'block';
 }
@@ -211,12 +208,12 @@ function showPhotoModal(path, filename, metadata) {
     modal.show();
 }
 
-// Generate metadata HTML
+// Generate metadata HTML - compact version
 function generateMetadataHTML(metadata) {
     let content = '';
     
     if (!metadata || Object.keys(metadata).length === 0) {
-        return '<div class="text-muted">Tidak ada metadata tersedia</div>';
+        return '<div class="text-muted small">Tidak ada metadata tersedia</div>';
     }
     
     const fields = [
@@ -273,31 +270,17 @@ function generateMetadataHTML(metadata) {
         `;
     }
     
-    return content || '<div class="text-muted">Tidak ada informasi detail tersedia</div>';
+    return content || '<div class="text-muted small">Tidak ada informasi detail tersedia</div>';
 }
 
-// Add hover effects and interactions
+// Enhanced interactions and animations
 document.addEventListener('DOMContentLoaded', function() {
-    // Add hover effects to folder cards
-    const folderCards = document.querySelectorAll('.hover-card');
-    folderCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
-    
-    // Add click to enlarge for photo cards
-    const photoImages = document.querySelectorAll('.card-img-top');
-    photoImages.forEach(img => {
-        img.style.cursor = 'pointer';
-        img.addEventListener('click', function() {
-            // Photo modal will be triggered by onclick in template
-        });
-    });
+    // Add smooth hover effects
+    document.addEventListener('mouseenter', function(e) {
+        if (e.target.closest('.hover-card')) {
+            e.target.closest('.hover-card').style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        }
+    }, true);
     
     // Add keyboard navigation
     document.addEventListener('keydown', function(e) {
@@ -308,61 +291,116 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.hide();
             }
         }
+        
+        // Arrow keys for navigation
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            // TODO: Implement photo navigation
+        }
     });
+    
+    // Add intersection observer for animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe cards for animation
+    function observeCards() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+    }
+    
+    // Call observe when cards are rendered
+    const originalRenderFoldersList = window.renderFoldersList;
+    const originalRenderFolderPhotos = window.renderFolderPhotos;
+    
+    if (originalRenderFoldersList) {
+        window.renderFoldersList = function(...args) {
+            originalRenderFoldersList.apply(this, args);
+            setTimeout(observeCards, 100);
+        };
+    }
+    
+    if (originalRenderFolderPhotos) {
+        window.renderFolderPhotos = function(...args) {
+            originalRenderFolderPhotos.apply(this, args);
+            setTimeout(observeCards, 100);
+        };
+    }
 });
 
-// Add loading state for navigation
-function showLoadingState() {
-    const body = document.body;
-    const loader = document.createElement('div');
-    loader.id = 'page-loader';
-    loader.innerHTML = `
-        <div class="d-flex justify-content-center align-items-center position-fixed top-0 start-0 w-100 h-100" 
-             style="background: rgba(255,255,255,0.8); z-index: 9999;">
-            <div class="text-center">
-                <div class="loading-spinner" style="width: 40px; height: 40px; border-width: 4px;"></div>
-                <div class="mt-2">Loading...</div>
-            </div>
-        </div>
-    `;
-    body.appendChild(loader);
-}
+// Add image error handling
+document.addEventListener('DOMContentLoaded', function() {
+    // Delegate event for dynamically added images
+    document.addEventListener('error', function(e) {
+        if (e.target.tagName === 'IMG') {
+            e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
+            e.target.alt = 'Image not found';
+            e.target.classList.add('opacity-50');
+        }
+    }, true);
+});
 
-function hideLoadingState() {
-    const loader = document.getElementById('page-loader');
-    if (loader) {
-        loader.remove();
-    }
-}
-
-// Add image lazy loading for better performance
-function addLazyLoading() {
-    const images = document.querySelectorAll('img[data-src]');
+// Add touch support for mobile
+document.addEventListener('DOMContentLoaded', function() {
+    let touchStartY = 0;
+    let touchEndY = 0;
     
+    document.addEventListener('touchstart', function(e) {
+        touchStartY = e.changedTouches[0].screenY;
+    });
+    
+    document.addEventListener('touchend', function(e) {
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartY - touchEndY;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                // Swipe up - could be used for future features
+            } else {
+                // Swipe down - could be used for future features
+            }
+        }
+    }
+});
+
+// Performance optimization: Lazy loading for images
+function initLazyLoading() {
     const imageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const img = entry.target;
-                img.src = img.dataset.src;
-                img.removeAttribute('data-src');
-                observer.unobserve(img);
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    observer.unobserve(img);
+                }
             }
         });
+    }, {
+        rootMargin: '50px'
     });
     
+    // Apply to dynamically loaded images
+    const images = document.querySelectorAll('img[data-src]');
     images.forEach(img => imageObserver.observe(img));
-}
-
-// Initialize lazy loading when page loads
-document.addEventListener('DOMContentLoaded', addLazyLoading);
-
-// Add error handling for images
-document.addEventListener('DOMContentLoaded', function() {
-    const images = document.querySelectorAll('img');
-    images.forEach(img => {
-        img.addEventListener('error', function() {
-            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
-            this.alt = 'Image not found';
-        });
-    });
-}); 
+} 

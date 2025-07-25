@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
             searchPhotos();
         }
     });
+    
+    // Add fade-in animation to page
+    document.querySelector('.container').classList.add('fade-in');
 });
 
 /**
@@ -54,13 +57,14 @@ async function handleUpload(event) {
     
     // Validate files selected
     if (!photosInput.files || photosInput.files.length === 0) {
-        alert('Silakan pilih foto terlebih dahulu!');
+        showToast('Silakan pilih foto terlebih dahulu!', 'warning');
         return;
     }
     
     // Disable upload button and show progress
     uploadBtn.disabled = true;
-    uploadBtn.innerHTML = '<span class="loading-spinner"></span> Uploading...';
+    uploadBtn.classList.add('loading');
+    uploadBtn.innerHTML = '<span class="loading-spinner me-2"></span>Uploading...';
     progressSection.style.display = 'block';
     resultsSection.style.display = 'none';
     
@@ -100,10 +104,17 @@ async function handleUpload(event) {
         showToast('Error: ' + error.message, 'error');
         
         // Reset UI
-        uploadBtn.disabled = false;
-        uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload dan Proses Foto';
+        resetUploadButton();
         progressSection.style.display = 'none';
     }
+}
+
+// Reset upload button to original state
+function resetUploadButton() {
+    const uploadBtn = document.getElementById('uploadBtn');
+    uploadBtn.disabled = false;
+    uploadBtn.classList.remove('loading');
+    uploadBtn.innerHTML = '<i class="fas fa-magic me-2"></i>Upload dan Proses dengan AI';
 }
 
 // Start monitoring processing status
@@ -135,7 +146,7 @@ async function checkProcessingStatus() {
     }
 }
 
-// Update progress UI
+// Update progress UI with compact design
 function updateProgressUI(status) {
     const progressBar = document.getElementById('progressBar');
     const statusText = document.getElementById('statusText');
@@ -149,8 +160,8 @@ function updateProgressUI(status) {
         progressBar.textContent = `${Math.round(progress)}%`;
         
         statusText.innerHTML = `
-            <div class="status-processing">
-                <i class="fas fa-cog fa-spin"></i> 
+            <div class="status-processing d-flex align-items-center">
+                <i class="fas fa-cog fa-spin me-2"></i> 
                 Memproses batch ${status.current_batch}/${status.total_batches}
             </div>
         `;
@@ -158,22 +169,20 @@ function updateProgressUI(status) {
         if (status.current_files && status.current_files.length > 0) {
             currentFiles.innerHTML = `
                 <strong>File saat ini:</strong><br>
-                ${status.current_files.map(file => `<small>• ${file}</small>`).join('<br>')}
+                ${status.current_files.map(file => `<small class="text-muted">• ${file}</small>`).join('<br>')}
             `;
         }
     }
 }
 
-// Show final results
+// Show final results with compact design
 function showFinalResults(status) {
-    const uploadBtn = document.getElementById('uploadBtn');
     const resultsSection = document.getElementById('resultsSection');
     const resultsContent = document.getElementById('resultsContent');
     const progressSection = document.getElementById('progressSection');
     
     // Reset upload button
-    uploadBtn.disabled = false;
-    uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload dan Proses Foto';
+    resetUploadButton();
     
     // Hide progress, show results
     progressSection.style.display = 'none';
@@ -185,14 +194,14 @@ function showFinalResults(status) {
     if (status.completed_files && status.completed_files.length > 0) {
         content += `
             <div class="alert alert-success">
-                <h6><i class="fas fa-check-circle"></i> Berhasil diproses: ${status.completed_files.length} foto</h6>
-                <ul class="mb-0">
-                    ${status.completed_files.slice(0, 5).map(file => 
-                        `<li>${file.filename} → <strong>${file.folder}</strong></li>`
+                <h6 class="mb-2"><i class="fas fa-check-circle me-2"></i>Berhasil diproses: ${status.completed_files.length} foto</h6>
+                <div class="small">
+                    ${status.completed_files.slice(0, 3).map(file => 
+                        `<div class="mb-1">• ${file.filename} → <strong>${file.folder}</strong></div>`
                     ).join('')}
-                    ${status.completed_files.length > 5 ? 
-                        `<li><em>... dan ${status.completed_files.length - 5} foto lainnya</em></li>` : ''}
-                </ul>
+                    ${status.completed_files.length > 3 ? 
+                        `<div class="text-muted">... dan ${status.completed_files.length - 3} foto lainnya</div>` : ''}
+                </div>
             </div>
         `;
     }
@@ -200,23 +209,23 @@ function showFinalResults(status) {
     if (status.failed_files && status.failed_files.length > 0) {
         content += `
             <div class="alert alert-warning">
-                <h6><i class="fas fa-exclamation-triangle"></i> Gagal diproses: ${status.failed_files.length} file</h6>
-                <ul class="mb-0">
-                    ${status.failed_files.slice(0, 3).map(file => 
-                        `<li>${file.original_path || 'Unknown'}: ${file.error || 'Unknown error'}</li>`
+                <h6 class="mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Gagal diproses: ${status.failed_files.length} file</h6>
+                <div class="small">
+                    ${status.failed_files.slice(0, 2).map(file => 
+                        `<div class="mb-1">• ${file.original_path || 'Unknown'}: ${file.error || 'Unknown error'}</div>`
                     ).join('')}
-                </ul>
+                </div>
             </div>
         `;
     }
     
     content += `
-        <div class="mt-3">
-            <a href="/browse" class="btn btn-primary me-2">
-                <i class="fas fa-folder"></i> Browse Foto
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="/browse" class="btn btn-primary btn-sm">
+                <i class="fas fa-folder me-1"></i>Browse Foto
             </a>
-            <button class="btn btn-outline-primary" onclick="refreshStats()">
-                <i class="fas fa-chart-bar"></i> Lihat Statistik
+            <button class="btn btn-outline-primary btn-sm" onclick="refreshStats()">
+                <i class="fas fa-chart-bar me-1"></i>Lihat Statistik
             </button>
         </div>
     `;
@@ -227,7 +236,7 @@ function showFinalResults(status) {
     document.getElementById('uploadForm').reset();
 }
 
-// Search photos
+// Search photos with compact design
 async function searchPhotos() {
     const query = document.getElementById('searchQuery').value.trim();
     const resultsDiv = document.getElementById('searchResults');
@@ -238,7 +247,12 @@ async function searchPhotos() {
     }
     
     // Show loading
-    resultsDiv.innerHTML = '<div class="text-center"><div class="loading-spinner"></div> Mencari foto...</div>';
+    resultsDiv.innerHTML = `
+        <div class="text-center py-3">
+            <div class="loading-spinner mx-auto mb-2"></div>
+            <div class="small text-muted">Mencari foto...</div>
+        </div>
+    `;
     
     try {
         const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
@@ -254,48 +268,47 @@ async function searchPhotos() {
         console.error('Error searching:', error);
         resultsDiv.innerHTML = `
             <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle"></i> Error: ${error.message}
+                <i class="fas fa-exclamation-circle me-2"></i>Error: ${error.message}
             </div>
         `;
     }
 }
 
-// Display search results
+// Display search results with compact design
 function displaySearchResults(results, query) {
     const resultsDiv = document.getElementById('searchResults');
     
     if (results.length === 0) {
         resultsDiv.innerHTML = `
             <div class="alert alert-info">
-                <i class="fas fa-search"></i> Tidak ada foto yang ditemukan untuk "${query}"
+                <i class="fas fa-search me-2"></i>Tidak ada foto yang ditemukan untuk "${query}"
             </div>
         `;
         return;
     }
     
     let content = `
-        <div class="alert alert-success">
-            <i class="fas fa-search"></i> Ditemukan ${results.length} foto untuk "${query}"
+        <div class="alert alert-success py-2">
+            <small><i class="fas fa-search me-1"></i>Ditemukan ${results.length} foto untuk "${query}"</small>
         </div>
     `;
     
-    results.forEach(photo => {
+    results.slice(0, 3).forEach(photo => {
         content += `
             <div class="search-result-item">
-                <div class="row">
-                    <div class="col-md-3">
-                        <img src="/${photo.path}" class="search-result-image" alt="${photo.filename}"
+                <div class="row align-items-center">
+                    <div class="col-4">
+                        <img src="/${photo.path}" class="search-result-image w-100" alt="${photo.filename}"
                              onclick="showPhotoModal('${photo.path}', '${photo.filename}', ${JSON.stringify(photo.analysis).replace(/"/g, '&quot;')})">
                     </div>
-                    <div class="col-md-9">
-                        <h6>${photo.filename}</h6>
-                        <p class="search-result-meta">
+                    <div class="col-8">
+                        <h6 class="mb-1 text-truncate">${photo.filename}</h6>
+                        <p class="small text-muted mb-2">
                             <strong>Folder:</strong> ${photo.folder}<br>
-                            <strong>Deskripsi:</strong> ${photo.analysis.description || 'Tidak ada deskripsi'}<br>
-                            <strong>Aktivitas:</strong> ${photo.analysis.activity || 'Tidak diketahui'}
+                            ${photo.analysis.description ? `<strong>Deskripsi:</strong> ${photo.analysis.description.substring(0, 60)}${photo.analysis.description.length > 60 ? '...' : ''}` : ''}
                         </p>
                         <div>
-                            ${(photo.analysis.keywords || []).slice(0, 5).map(keyword => 
+                            ${(photo.analysis.keywords || []).slice(0, 3).map(keyword => 
                                 `<span class="badge bg-secondary me-1">${keyword}</span>`
                             ).join('')}
                         </div>
@@ -305,10 +318,18 @@ function displaySearchResults(results, query) {
         `;
     });
     
+    if (results.length > 3) {
+        content += `
+            <div class="text-center mt-2">
+                <small class="text-muted">Dan ${results.length - 3} foto lainnya...</small>
+            </div>
+        `;
+    }
+    
     resultsDiv.innerHTML = content;
 }
 
-// Show photo modal
+// Show photo modal with compact metadata
 function showPhotoModal(path, filename, metadata) {
     const modal = new bootstrap.Modal(document.getElementById('photoModal'));
     const modalTitle = document.getElementById('photoModalTitle');
@@ -320,10 +341,22 @@ function showPhotoModal(path, filename, metadata) {
     modalImage.alt = filename;
     
     // Generate metadata content
-    let metadataContent = '';
+    let metadataContent = generateMetadataHTML(metadata);
+    modalMetadata.innerHTML = metadataContent;
+    
+    modal.show();
+}
+
+// Generate compact metadata HTML
+function generateMetadataHTML(metadata) {
+    let content = '';
+    
+    if (!metadata || Object.keys(metadata).length === 0) {
+        return '<div class="text-muted small">Tidak ada metadata tersedia</div>';
+    }
     
     if (metadata.description) {
-        metadataContent += `
+        content += `
             <div class="metadata-item">
                 <div class="metadata-label">Deskripsi:</div>
                 <div class="metadata-value">${metadata.description}</div>
@@ -332,7 +365,7 @@ function showPhotoModal(path, filename, metadata) {
     }
     
     if (metadata.activity) {
-        metadataContent += `
+        content += `
             <div class="metadata-item">
                 <div class="metadata-label">Aktivitas:</div>
                 <div class="metadata-value">${metadata.activity}</div>
@@ -341,7 +374,7 @@ function showPhotoModal(path, filename, metadata) {
     }
     
     if (metadata.location_type || metadata.location_specific) {
-        metadataContent += `
+        content += `
             <div class="metadata-item">
                 <div class="metadata-label">Lokasi:</div>
                 <div class="metadata-value">${metadata.location_type || 'Unknown'}${metadata.location_specific ? ` - ${metadata.location_specific}` : ''}</div>
@@ -350,7 +383,7 @@ function showPhotoModal(path, filename, metadata) {
     }
     
     if (metadata.people_count > 0) {
-        metadataContent += `
+        content += `
             <div class="metadata-item">
                 <div class="metadata-label">Orang:</div>
                 <div class="metadata-value">${metadata.people_count} orang${metadata.people_details ? ` - ${metadata.people_details}` : ''}</div>
@@ -359,7 +392,7 @@ function showPhotoModal(path, filename, metadata) {
     }
     
     if (metadata.mood) {
-        metadataContent += `
+        content += `
             <div class="metadata-item">
                 <div class="metadata-label">Suasana:</div>
                 <div class="metadata-value">${metadata.mood}</div>
@@ -368,7 +401,7 @@ function showPhotoModal(path, filename, metadata) {
     }
     
     if (metadata.main_objects && metadata.main_objects.length > 0) {
-        metadataContent += `
+        content += `
             <div class="metadata-item">
                 <div class="metadata-label">Objek Utama:</div>
                 <div class="metadata-value">${metadata.main_objects.join(', ')}</div>
@@ -377,22 +410,20 @@ function showPhotoModal(path, filename, metadata) {
     }
     
     if (metadata.keywords && metadata.keywords.length > 0) {
-        metadataContent += `
+        content += `
             <div class="metadata-item">
                 <div class="metadata-label">Keywords:</div>
                 <div class="metadata-value">
-                    ${metadata.keywords.map(keyword => `<span class="badge bg-info me-1">${keyword}</span>`).join('')}
+                    ${metadata.keywords.map(keyword => `<span class="badge bg-info me-1 mb-1">${keyword}</span>`).join('')}
                 </div>
             </div>
         `;
     }
     
-    modalMetadata.innerHTML = metadataContent || '<div class="text-muted">Tidak ada metadata tersedia</div>';
-    
-    modal.show();
+    return content || '<div class="text-muted small">Tidak ada metadata tersedia</div>';
 }
 
-// Show statistics
+// Show statistics with compact design
 async function showStats() {
     const modal = new bootstrap.Modal(document.getElementById('statsModal'));
     const statsContent = document.getElementById('statsContent');
@@ -404,12 +435,12 @@ async function showStats() {
         if (response.ok) {
             const stats = result.stats;
             let content = `
-                <div class="row text-center mb-4">
-                    <div class="col">
+                <div class="row text-center mb-3">
+                    <div class="col-6">
                         <h4 class="text-primary">${stats.total_photos}</h4>
                         <small class="text-muted">Total Foto</small>
                     </div>
-                    <div class="col">
+                    <div class="col-6">
                         <h4 class="text-success">${stats.total_folders}</h4>
                         <small class="text-muted">Total Folder</small>
                     </div>
@@ -417,18 +448,19 @@ async function showStats() {
             `;
             
             if (stats.folders && Object.keys(stats.folders).length > 0) {
-                content += '<h6>Distribusi per Folder:</h6><ul class="list-group">';
+                content += '<h6 class="mb-3">Distribusi per Folder:</h6><div class="list-group">';
                 Object.entries(stats.folders)
                     .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
                     .forEach(([folder, count]) => {
                         content += `
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                ${folder}
+                            <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+                                <span class="small">${folder}</span>
                                 <span class="badge bg-primary">${count}</span>
-                            </li>
+                            </div>
                         `;
                     });
-                content += '</ul>';
+                content += '</div>';
             }
             
             statsContent.innerHTML = content;
@@ -439,7 +471,7 @@ async function showStats() {
     } catch (error) {
         statsContent.innerHTML = `
             <div class="alert alert-danger">
-                Error: ${error.message}
+                <i class="fas fa-exclamation-circle me-2"></i>Error: ${error.message}
             </div>
         `;
     }
@@ -452,16 +484,20 @@ async function refreshStats() {
     showStats();
 }
 
-// Utility function for showing toasts
+// Enhanced toast utility function
 function showToast(message, type = 'info') {
-    // Create toast element
-    const toastContainer = document.querySelector('.toast-container') || createToastContainer();
+    // Create toast container if it doesn't exist
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+        toastContainer = createToastContainer();
+    }
     
     const toastId = 'toast-' + Date.now();
     const toastHtml = `
         <div id="${toastId}" class="toast align-items-center text-white bg-${type === 'error' ? 'danger' : type === 'warning' ? 'warning' : type === 'success' ? 'success' : 'primary'} border-0" role="alert">
             <div class="d-flex">
                 <div class="toast-body">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
                     ${message}
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
@@ -472,7 +508,10 @@ function showToast(message, type = 'info') {
     toastContainer.insertAdjacentHTML('beforeend', toastHtml);
     
     const toastElement = document.getElementById(toastId);
-    const toast = new bootstrap.Toast(toastElement);
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: true,
+        delay: type === 'error' ? 5000 : 3000
+    });
     toast.show();
     
     // Remove toast element after it's hidden
@@ -488,4 +527,75 @@ function createToastContainer() {
     container.style.zIndex = '9999';
     document.body.appendChild(container);
     return container;
-} 
+}
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + U for upload focus
+    if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+        e.preventDefault();
+        document.getElementById('photos').focus();
+    }
+    
+    // Ctrl/Cmd + F for search focus
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        document.getElementById('searchQuery').focus();
+    }
+    
+    // ESC to close modals
+    if (e.key === 'Escape') {
+        const modals = document.querySelectorAll('.modal.show');
+        modals.forEach(modal => {
+            const bsModal = bootstrap.Modal.getInstance(modal);
+            if (bsModal) {
+                bsModal.hide();
+            }
+        });
+    }
+});
+
+// Add drag and drop functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadForm');
+    const photosInput = document.getElementById('photos');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    uploadArea.addEventListener('drop', handleDrop, false);
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    function highlight(e) {
+        uploadArea.classList.add('border-primary', 'bg-light');
+    }
+    
+    function unhighlight(e) {
+        uploadArea.classList.remove('border-primary', 'bg-light');
+    }
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        photosInput.files = files;
+        
+        // Show file names
+        const fileList = Array.from(files).map(file => file.name).join(', ');
+        showToast(`Files selected: ${fileList.substring(0, 100)}${fileList.length > 100 ? '...' : ''}`, 'info');
+    }
+}); 

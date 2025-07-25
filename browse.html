@@ -12,63 +12,63 @@
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-camera-retro"></i> AI Photo Manager
+                <i class="fas fa-camera-retro me-2"></i>AI Photo Manager
             </a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="/">
-                    <i class="fas fa-cloud-upload-alt me-2"></i>Upload Foto
+                    <i class="fas fa-cloud-upload-alt me-1"></i>Upload Foto
                 </a>
                 <a class="nav-link active" href="/browse.html">
-                    <i class="fas fa-images me-2"></i>Browse Foto
+                    <i class="fas fa-images me-1"></i>Browse Foto
                 </a>
             </div>
         </div>
     </nav>
 
-    <div class="container" style="margin-top: 120px;">
+    <div class="container fade-in" style="margin-top: 100px;">
         <!-- Loading indicator -->
-        <div id="loadingIndicator" class="text-center py-5">
+        <div id="loadingIndicator" class="text-center py-4">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <div class="mt-2">Memuat koleksi foto...</div>
+            <div class="mt-2 small">Memuat koleksi foto...</div>
         </div>
 
         <!-- Folder View (untuk menampilkan foto dalam folder) -->
         <div id="folderView" style="display: none;">
-            <div class="row align-items-center mb-5">
+            <div class="row align-items-center mb-4">
                 <div class="col">
                     <div class="d-flex align-items-center">
-                        <div class="p-3 rounded-circle me-3" style="background: var(--glass-bg); backdrop-filter: blur(10px);">
-                            <i class="fas fa-folder-open fa-2x text-primary"></i>
+                        <div class="folder-icon me-3">
+                            <i class="fas fa-folder-open fa-lg text-white"></i>
                         </div>
                         <div>
                             <h2 class="mb-1" id="folderName">Nama Folder</h2>
-                            <p class="text-muted mb-0">Koleksi foto yang terorganisir dengan AI</p>
+                            <p class="text-muted mb-0 small">Koleksi foto yang terorganisir dengan AI</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-auto">
-                    <a href="/browse.html" class="btn btn-outline-primary">
-                        <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar
+                    <a href="/browse.html" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>Kembali
                     </a>
                 </div>
             </div>
 
             <!-- Container untuk foto-foto dalam folder -->
-            <div id="photosContainer" class="row">
+            <div id="photosContainer" class="row card-grid">
                 <!-- Foto akan diisi oleh JavaScript -->
             </div>
 
             <!-- Pesan jika folder kosong -->
             <div id="emptyFolderMessage" style="display: none;">
-                <div class="card">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-images fa-4x text-muted mb-3"></i>
+                <div class="card text-center">
+                    <div class="card-body py-4">
+                        <i class="fas fa-images fa-3x text-muted mb-3"></i>
                         <h5 class="text-muted">Folder Kosong</h5>
-                        <p class="text-muted">Tidak ada foto dalam folder ini saat ini.</p>
-                        <a href="/" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>Upload Foto Baru
+                        <p class="text-muted small">Tidak ada foto dalam folder ini saat ini.</p>
+                        <a href="/" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-1"></i>Upload Foto Baru
                         </a>
                     </div>
                 </div>
@@ -77,24 +77,24 @@
 
         <!-- Folders List View (untuk menampilkan daftar folder) -->
         <div id="foldersView" style="display: none;">
-            <div class="text-center mb-5">
-                <h1 class="display-6 fw-bold mb-3">Koleksi Foto Anda</h1>
-                <p class="lead text-muted">Jelajahi foto-foto yang telah diorganisir oleh AI</p>
+            <div class="text-center mb-4">
+                <h1 class="display-6 fw-bold mb-2">Koleksi Foto Anda</h1>
+                <p class="lead">Jelajahi foto-foto yang telah diorganisir oleh AI</p>
             </div>
             
             <!-- Container untuk daftar folder -->
-            <div id="foldersContainer" class="row">
+            <div id="foldersContainer" class="row card-grid">
                 <!-- Folder akan diisi oleh JavaScript -->
             </div>
 
             <!-- Pesan jika belum ada koleksi -->
             <div id="noFoldersMessage" style="display: none;">
-                <div class="card">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-folder-plus fa-4x text-muted mb-4"></i>
-                        <h4 class="text-muted mb-3">Belum Ada Koleksi</h4>
-                        <p class="text-muted mb-4">Mulai upload foto untuk membuat koleksi otomatis dengan AI</p>
-                        <a href="/" class="btn btn-primary btn-lg">
+                <div class="card text-center">
+                    <div class="card-body py-5">
+                        <i class="fas fa-folder-plus fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted mb-2">Belum Ada Koleksi</h4>
+                        <p class="text-muted mb-3">Mulai upload foto untuk membuat koleksi otomatis dengan AI</p>
+                        <a href="/" class="btn btn-primary">
                             <i class="fas fa-magic me-2"></i>Upload Foto Pertama
                         </a>
                     </div>
@@ -105,7 +105,7 @@
         <!-- Error message -->
         <div id="errorMessage" style="display: none;">
             <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle"></i>
+                <i class="fas fa-exclamation-circle me-2"></i>
                 <span id="errorText">Terjadi kesalahan saat memuat data</span>
             </div>
         </div>
@@ -122,7 +122,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-8">
-                            <img id="photoModalImage" src="" class="img-fluid" alt="">
+                            <img id="photoModalImage" src="" class="img-fluid rounded" alt="">
                         </div>
                         <div class="col-md-4">
                             <div id="photoModalMetadata">
